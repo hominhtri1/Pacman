@@ -1,16 +1,23 @@
-#include "Agent3.h"
+#include "Agent4.h"
 
-Agent3::Agent3(int M, int N, int Px, int Py, int monsterCount)
+Agent4::Agent4(vector<vector<int>> map, int monsterCount)
 {
-	this->M = M;
-	this->N = N;
+	this->map = map;
 
-	this->Px = Px;
-	this->Py = Py;
+	M = map.size();
+	N = map[0].size();
 
-	vector<vector<int>> tempMap(M, vector<int>(N, 5));
-	tempMap[Px][Py] = 0;
-	map = tempMap;
+	for (int i = 0; i < M; ++i)
+	{
+		for (int j = 0; j < N; ++j)
+		{
+			if (map[i][j] == 4)
+			{
+				Px = i;
+				Py = j;
+			}
+		}
+	}
 
 	path = vector<Pos>(0);
 	path_i = path.size();
@@ -18,7 +25,7 @@ Agent3::Agent3(int M, int N, int Px, int Py, int monsterCount)
 	monsterPos = vector<Pos>(monsterCount);
 }
 
-vector<Pos> Agent3::buildPath(vector<vector<Pos>> & prev, int end_x, int end_y)
+vector<Pos> Agent4::buildPath(vector<vector<Pos>> & prev, int end_x, int end_y)
 {
 	vector<Pos> curPath;
 
@@ -49,41 +56,10 @@ vector<Pos> Agent3::buildPath(vector<vector<Pos>> & prev, int end_x, int end_y)
 	return outPath;
 }
 
-bool Agent3::BFSGoal(int x, int y)
+bool Agent4::adjacentMonster(int x, int y, int relaxedLevel)
 {
-	if (map[x][y] == 2)
-		return true;
-
-	bool atVisionEdge = false;
-
-	for (int i = -visionSize; i <= visionSize; ++i)
-	{
-		for (int j = -visionSize; j <= visionSize; ++j)
-		{
-			int cur_x = x + i;
-			int cur_y = y + j;
-
-			if (cur_x >= 0 && cur_x < M && cur_y >= 0 && cur_y < N)
-			{
-				if (map[cur_x][cur_y] == 5)
-					atVisionEdge = true;
-			}
-		}
-	}
-
-	return atVisionEdge;
-}
-
-bool Agent3::adjacentMonster(int x, int y, int relaxedLevel)
-{
-	if (relaxedLevel == 2)
-		return false;
-	
 	if (relaxedLevel == 1)
-	{
-		if (abs(x - Px) > visionSize || abs(y - Py) > visionSize)
-			return false;
-	}
+		return false;
 	
 	vector<int> dx2 = { 0, -1, 0, 1, 0 };
 	vector<int> dy2 = { 0, 0, 1, 0, -1 };
@@ -100,9 +76,6 @@ bool Agent3::adjacentMonster(int x, int y, int relaxedLevel)
 		{
 			Pos monsterCurPos = monsterPos[i];
 
-			if (monsterCurPos.x == -1 && monsterCurPos.y == -1)
-				continue;
-
 			if (adjacent_x == monsterCurPos.x && adjacent_y == monsterCurPos.y)
 				return true;
 		}
@@ -111,7 +84,7 @@ bool Agent3::adjacentMonster(int x, int y, int relaxedLevel)
 	return false;
 }
 
-void Agent3::findPathWithBFS(int relaxedLevel)
+void Agent4::findPathWithBFS(int relaxedLevel)
 {
 	vector<Pos> tempPath;
 
@@ -130,7 +103,7 @@ void Agent3::findPathWithBFS(int relaxedLevel)
 		Pos curPos = D.front();
 		D.pop_front();
 
-		if (BFSGoal(curPos.x, curPos.y))
+		if (map[curPos.x][curPos.y] == 2)
 		{
 			tempPath = buildPath(prev, curPos.x, curPos.y);
 			break;
@@ -161,10 +134,46 @@ void Agent3::findPathWithBFS(int relaxedLevel)
 	path = tempPath;
 }
 
-Pos Agent3::interact(vector<vector<int>> vision, vector<Pos> visionMonsterPos, ofstream & fout)
+void Agent4::findSafePath()
 {
-	updateState(vision, visionMonsterPos);
+	vector<Pos> tempPath;
 	
+	vector<int> dx2 = { 0, -1, 0, 1, 0 };
+	vector<int> dy2 = { 0, 0, 1, 0, -1 };
+
+	bool found = false;
+
+	for (int i = 0; i < 5; ++i)
+	{
+		int adjacent_x = Px + dx2[i];
+		int adjacent_y = Py + dy2[i];
+
+		if (adjacent_x < 0 || adjacent_x >= M || adjacent_y < 0 || adjacent_y >= N)
+			continue;
+
+		if (map[adjacent_x][adjacent_y] == 1)
+			continue;
+
+		if (!adjacentMonster(adjacent_x, adjacent_y, 0))
+		{
+			tempPath.push_back(Pos(adjacent_x, adjacent_y));
+
+			found = true;
+
+			break;
+		}
+	}
+
+	if (!found)
+		tempPath.push_back(Pos(Px, Py));
+
+	path = tempPath;
+}
+
+Pos Agent4::interact(vector<Pos> inMonsterPos, ofstream & fout)
+{
+	monsterPos = inMonsterPos;
+
 	if (path_i == path.size() || adjacentMonster(path[path_i].x, path[path_i].y, 0))
 	{
 		findPathWithBFS(0);
@@ -175,22 +184,17 @@ Pos Agent3::interact(vector<vector<int>> vision, vector<Pos> visionMonsterPos, o
 		{
 			findPathWithBFS(1);
 
-			printPath(fout);
-
 			if (path.size() == 0)
-			{
-				findPathWithBFS(2);
+				return Pos(-1, -1);
 
-				if (path.size() == 0)
-					return Pos(-1, -1);
+			vector<Pos> tempPath;
+			path = tempPath;
 
-				vector<Pos> tempPath;
-				path = tempPath;
+			path_i = 0;
 
-				path_i = 0;
+			findSafePath();
 
-				return Pos(Px, Py);
-			}
+			printPath(fout);
 		}
 
 		path_i = 0;
@@ -207,39 +211,7 @@ Pos Agent3::interact(vector<vector<int>> vision, vector<Pos> visionMonsterPos, o
 	return curPos;
 }
 
-void Agent3::updateState(vector<vector<int>> & vision, vector<Pos> & visionMonsterPos)
-{
-	for (int i = -visionSize; i <= visionSize; ++i)
-	{
-		for (int j = -visionSize; j <= visionSize; ++j)
-		{
-			if (vision[visionSize + i][visionSize + j] == 5)
-				continue;
-
-			int cur_x = Px + i;
-			int cur_y = Py + j;
-
-			if (vision[visionSize + i][visionSize + j] == 3 || vision[visionSize + i][visionSize + j] == 4)
-				map[cur_x][cur_y] = 0;
-			else
-				map[cur_x][cur_y] = vision[visionSize + i][visionSize + j];
-		}
-	}
-
-	
-	for (int i = 0; i < visionMonsterPos.size(); ++i)
-	{
-		Pos monsterCurPos = visionMonsterPos[i];
-
-		if (monsterCurPos.x == -1 && monsterCurPos.y == -1)
-			continue;
-
-		monsterPos[i] = visionMonsterPos[i];
-	}
-	
-}
-
-void Agent3::printPath(ofstream & fout)
+void Agent4::printPath(ofstream & fout)
 {
 	fout << path.size() << endl;
 

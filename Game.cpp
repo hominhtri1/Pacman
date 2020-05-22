@@ -3,6 +3,8 @@
 #include "Environment1.h"
 #include "Agent3.h"
 #include "Environment3.h"
+#include "Agent4.h"
+#include "Environment4.h"
 
 Game::Game()
 {}
@@ -97,7 +99,32 @@ void Game::level3()
 }
 
 void Game::level4()
-{}
+{
+	Agent4 agent(map, monsterCount);
+
+	Environment4 environment(map);
+
+	environment.drawMonsters();
+
+	vector<Pos> monsterPos = environment.curMonsterPos();
+
+	bool ok = false;
+
+	ofstream fout;
+	fout.open("log.txt");
+
+	while (true)
+	{
+		Pos curPos = agent.interact(monsterPos, fout);
+
+		bool ok = environment.interact(curPos, monsterPos);
+
+		if (!ok)
+			break;
+	}
+
+	fout.close();
+}
 
 void Game::start()
 {
