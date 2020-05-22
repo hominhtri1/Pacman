@@ -1,6 +1,8 @@
 #include "Game.h"
 #include "Agent1.h"
 #include "Environment1.h"
+#include "Agent2.h"
+#include "Environment2.h"
 #include "Agent3.h"
 #include "Environment3.h"
 #include "Agent4.h"
@@ -67,7 +69,25 @@ void Game::level1()
 }
 
 void Game::level2()
-{}
+{
+	Agent2 agent(map);
+
+	Environment2 environment(map);
+
+	draw(map);
+
+	bool ok = false;
+
+	while (true)
+	{
+		Pos curPos = agent.interact();
+
+		bool ok = environment.interact(curPos);
+
+		if (!ok)
+			break;
+	}
+}
 
 void Game::level3()
 {
