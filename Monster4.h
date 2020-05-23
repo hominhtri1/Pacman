@@ -18,7 +18,7 @@ private:
 	int Px;
 	int Py;
 
-	vector<int> distanceTypeWeight{ 9, 3, 1 };
+	vector<int> distanceTypeWeight{ 4, 2, 1 };
 
 	int distanceToAgent(int x, int y);
 

@@ -40,6 +40,11 @@ bool Environment3::interact(Pos curPos, vector<vector<int>> & outVision, vector<
 	if (curPos.x == -1)
 		return false;
 
+	score -= 1;
+
+	if (map[curPos.x][curPos.y] == 2)
+		score += 20;
+
 	if (map[curPos.x][curPos.y] == 2)
 		foodCount -= 1;
 
@@ -104,8 +109,10 @@ void Environment3::drawVision(vector<vector<int>> & vision)
 	}
 
 	cout << endl;
+	cout << "Score: " << setw(4) << score << endl;
 
-	cout << setw(2) << foodCount << endl;
+	cout << endl;
+	cout << "Remaining food: " << setw(2) << foodCount << endl;
 
 	cin.get();
 }

@@ -13,6 +13,8 @@ using namespace std;
 
 const int visionSize = 3;
 
+const int initialScore = 100;
+
 class Pos
 {
 
@@ -30,6 +32,6 @@ void showConsoleCursor(bool showFlag);
 void gotoXY(int x, int y);
 
 void drawTile(int tileNum);
-void draw(const vector<vector<int>> & map);
+void draw(const vector<vector<int>> & map, int score = initialScore);
 
 #endif

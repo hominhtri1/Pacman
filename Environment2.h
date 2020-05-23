@@ -15,6 +15,8 @@ private:
 	int Px;
 	int Py;
 
+	int score = initialScore;
+
 public:
 	Environment2(vector<vector<int>> map);
 

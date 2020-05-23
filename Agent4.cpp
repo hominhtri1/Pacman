@@ -64,6 +64,12 @@ bool Agent4::adjacentMonster(int x, int y, int relaxedLevel)
 	vector<int> dx2 = { 0, -1, 0, 1, 0 };
 	vector<int> dy2 = { 0, 0, 1, 0, -1 };
 
+	if (relaxedLevel == 2)
+	{
+		dx2 = { 0 };
+		dy2 = { 0 };
+	}
+
 	for (int i = 0; i < 5; ++i)
 	{
 		int adjacent_x = x + dx2[i];
@@ -137,6 +143,8 @@ void Agent4::findPathWithBFS(int relaxedLevel)
 void Agent4::findSafePath()
 {
 	vector<Pos> tempPath;
+
+	vector<Pos> possiblePos;
 	
 	vector<int> dx2 = { 0, -1, 0, 1, 0 };
 	vector<int> dy2 = { 0, 0, 1, 0, -1 };
@@ -154,6 +162,8 @@ void Agent4::findSafePath()
 		if (map[adjacent_x][adjacent_y] == 1)
 			continue;
 
+		possiblePos.push_back(Pos(adjacent_x, adjacent_y));
+
 		if (!adjacentMonster(adjacent_x, adjacent_y, 0))
 		{
 			tempPath.push_back(Pos(adjacent_x, adjacent_y));
@@ -165,7 +175,14 @@ void Agent4::findSafePath()
 	}
 
 	if (!found)
-		tempPath.push_back(Pos(Px, Py));
+	{
+		int numPossible = possiblePos.size();
+
+		int choice = rand() % numPossible;
+		Pos choicePos = possiblePos[choice];
+
+		tempPath.push_back(choicePos);
+	}
 
 	path = tempPath;
 }

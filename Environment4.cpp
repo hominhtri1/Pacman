@@ -42,6 +42,11 @@ bool Environment4::interact(Pos curPos, vector<Pos> & outMonsterPos)
 	if (curPos.x == -1)
 		return false;
 
+	score -= 1;
+
+	if (map[curPos.x][curPos.y] == 2)
+		score += 20;
+
 	if (map[curPos.x][curPos.y] == 2)
 		foodCount -= 1;
 
@@ -57,7 +62,11 @@ bool Environment4::interact(Pos curPos, vector<Pos> & outMonsterPos)
 		Pos monsterNewPos = monsters[i]->interact(Px, Py);
 
 		if (monsterNewPos.x == curPos.x && monsterNewPos.y == curPos.y)
+		{
+			cout << "You are dead" << endl;
+
 			return false;
+		}
 	}
 
 	outMonsterPos = curMonsterPos();
@@ -78,7 +87,7 @@ void Environment4::drawMonsters()
 		tempMap[monsterCurPos.x][monsterCurPos.y] = 3;
 	}
 
-	draw(tempMap);
+	draw(tempMap, score);
 }
 
 vector<Pos> Environment4::curMonsterPos()

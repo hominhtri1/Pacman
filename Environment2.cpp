@@ -25,13 +25,18 @@ bool Environment2::interact(Pos curPos)
 	if (curPos.x == -1)
 		return false;
 
+	score -= 1;
+
+	if (map[curPos.x][curPos.y] == 2)
+		score += 20;
+
 	map[Px][Py] = 0;
 	map[curPos.x][curPos.y] = 4;
 
 	Px = curPos.x;
 	Py = curPos.y;
 
-	draw(map);
+	draw(map, score);
 
 	return true;
 }

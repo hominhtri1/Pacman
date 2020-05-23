@@ -56,7 +56,7 @@ void drawTile(int tileNum)
 	setColor(11);
 }
 
-void draw(const vector<vector<int>> & map)
+void draw(const vector<vector<int>> & map, int score)
 {
 	int M = map.size();
 	int N = map[0].size();
@@ -70,6 +70,9 @@ void draw(const vector<vector<int>> & map)
 
 		cout << endl;
 	}
+
+	cout << endl;
+	cout << "Score: " << setw(4) << score << endl;
 
 	cin.get();
 }

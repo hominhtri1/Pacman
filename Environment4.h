@@ -17,6 +17,8 @@ private:
 	int Px;
 	int Py;
 
+	int score = initialScore;
+
 	int foodCount;
 
 	vector<Monster4*> monsters;
