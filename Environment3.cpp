@@ -98,6 +98,7 @@ void Environment3::drawVision(vector<vector<int>> & vision)
 		cout << endl;
 	}
 
+	/*
 	cout << endl;
 
 	for (int i = 0; i < visionSize * 2 + 1; ++i)
@@ -107,6 +108,7 @@ void Environment3::drawVision(vector<vector<int>> & vision)
 
 		cout << endl;
 	}
+	*/
 
 	cout << endl;
 	cout << "Score: " << setw(4) << score << endl;
