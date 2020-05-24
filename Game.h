@@ -19,6 +19,8 @@ private:
 
 	void generateMap();
 
+	void levelMenu();
+
 	void level1();
 	void level2();
 	void level3();

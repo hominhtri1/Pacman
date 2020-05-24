@@ -8,6 +8,7 @@
 #include <Windows.h>
 #include <ctime>
 #include <iomanip>
+#include <string>
 
 using namespace std;
 
