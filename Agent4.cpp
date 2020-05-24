@@ -70,7 +70,7 @@ bool Agent4::adjacentMonster(int x, int y, int relaxedLevel)
 		dy2 = { 0 };
 	}
 
-	for (int i = 0; i < 5; ++i)
+	for (int i = 0; i < dx2.size(); ++i)
 	{
 		int adjacent_x = x + dx2[i];
 		int adjacent_y = y + dy2[i];
@@ -162,7 +162,8 @@ void Agent4::findSafePath()
 		if (map[adjacent_x][adjacent_y] == 1)
 			continue;
 
-		possiblePos.push_back(Pos(adjacent_x, adjacent_y));
+		if (!adjacentMonster(adjacent_x, adjacent_y, 2))
+			possiblePos.push_back(Pos(adjacent_x, adjacent_y));
 
 		if (!adjacentMonster(adjacent_x, adjacent_y, 0))
 		{

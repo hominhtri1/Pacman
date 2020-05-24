@@ -16,8 +16,8 @@ void Game::generateMap()
 	ofstream fout;
 	fout.open("map.txt");
 
-	int M = 10;
-	int N = 10;
+	int M = 20;
+	int N = 20;
 
 	fout << M << " " << N << endl;
 
